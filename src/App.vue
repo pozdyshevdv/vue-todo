@@ -1,28 +1,36 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <MainComponent />
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MainComponent from "./components/MainComponent";
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    MainComponent,
+  },
+
+  data: () => ({
+    //
+  }),
+  created() {
+    if (localStorage.getItem('userList') != undefined) {
+      this.$store.commit('setUserList', JSON.parse(localStorage.getItem('userList')));
+    }
+    if (localStorage.getItem('user') != undefined) {
+      this.$store.commit('setUser', localStorage.getItem('user'));
+      this.$store.commit('setAuth');
+    }
+    else {
+      this.$store.commit("setUser", null)
+    }
+    if (localStorage.getItem('taskList') != undefined) {
+      this.$store.commit('setTask', JSON.parse(localStorage.getItem('taskList')));
+    }
+  }
+};
+</script>
