@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="links">
-      <router-link to="/todolist">Домой</router-link>
+      <router-link v-if="$store.state.auth === true" to="/todolist">Домой</router-link>
       <router-link v-if="$store.state.auth === true" to="/logout">Выход</router-link>
       <router-link v-if="$store.state.auth === false" to="/login">Авторизация</router-link>
       <router-link v-if="$store.state.auth === false" to="/reg">Регистрация</router-link>

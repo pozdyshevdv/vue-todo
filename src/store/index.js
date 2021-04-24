@@ -8,7 +8,7 @@ export default new Vuex.Store({
     userList: [],
     taskList: [],
     auth: false,
-    user: null,
+    user: {},
   },
   mutations: {
     setUserList (state, userList) {
@@ -21,15 +21,11 @@ export default new Vuex.Store({
       state.auth = true;
     },
     setTask (state, taskList) {
-      state.taskList = taskList
+      state.taskList = taskList;
     },
     clearUser (state) {
       state.user = null;
       state.auth = false;
     },
   },
-  actions: {
-  },
-  modules: {
-  }
 })

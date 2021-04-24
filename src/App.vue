@@ -21,8 +21,11 @@ export default {
     if (localStorage.getItem('userList') != undefined) {
       this.$store.commit('setUserList', JSON.parse(localStorage.getItem('userList')));
     }
+    else {
+      this.$store.commit("setUserList", [])
+    }
     if (localStorage.getItem('user') != undefined) {
-      this.$store.commit('setUser', localStorage.getItem('user'));
+      this.$store.commit('setUser', JSON.parse(localStorage.getItem('user')));
       this.$store.commit('setAuth');
     }
     else {

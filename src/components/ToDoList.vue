@@ -1,20 +1,31 @@
 <template>
   <div class="main">
     <div class="input">
-      <input type="text"
-             @keydown.enter="addTask"
-             v-model="new_task"
+      <input
+          type="text"
+          @keydown.enter="addTask"
+          v-model="new_task"
       >
       <input type="submit" @click="addTask">
     </div>
-    <div v-if="this.$store.state.user != null">
-      <ul v-for="item in this.$store.state.taskList.filter(m => m.whose === this.$store.state.user.login)" :key="item.title">
-        <li>{{item.title}}</li>
-      </ul>
-    </div>
-    <div v-else>
-      <ul v-for="item in tasks_without_user" :key="item.title">
-        <li>{{item.title}}</li>
+    <div>
+      <ul
+          class="todos"
+          v-for="item in items = this.$store.state.taskList.filter(m => m.whose === this.$store.state.user.login)"
+          :key="item.id"
+      >
+        <li
+            @click="item.completed = !item.completed"
+            class="todo"
+        >
+          <div
+              class="item_content"
+              v-bind:class="{done: item.completed}"
+          >
+            {{item.title}}
+          </div>
+          <button @click="removeTask(item.id)">x</button>
+        </li>
       </ul>
     </div>
   </div>
@@ -26,45 +37,37 @@ export default {
   data() {
     return {
       task: {
+        id: null,
         title: '',
-        completed : false,
         whose: null,
+        completed: false,
       },
-      tasks_without_user: [],
       new_task: null,
     }
   },
   methods: {
     addTask () {
-      if (this.new_task != null && this.$store.state.user != null) {
+      if (this.new_task != null && this.$store.state.user != undefined) {
         let tasks = this.$store.state.taskList;
         tasks.push({
+          id: Math.random(),
           title: this.new_task,
           whose: this.$store.state.user.login,
+          completed: false,
         });
         this.$store.commit('setTask', tasks);
         localStorage.setItem('taskList', JSON.stringify(tasks));
         this.new_task= null;
       }
-      else {
-        if (this.new_task != null) {
-          this.tasks_without_user.push({
-            id: this.tasks_without_user.length,
-            title: this.new_task,
-            completed: false,
-          })
-          this.new_task = null
-        }
-      }
     },
-    removeTask(array, index) {
-      for (let i = 0; i < array.length; i++){
-        if (array[i].id == index) {
-          array.splice(i, 1);
-        }
+    removeTask (index) {
+      let tasks = this.$store.state.taskList;
+      let remaining_tasks = tasks.filter(m => m.id != index);
+      if (remaining_tasks != undefined) {
+        this.$store.commit('setTask', remaining_tasks);
+        localStorage.setItem('taskList', JSON.stringify(remaining_tasks));
       }
-      localStorage.setItem('items', JSON.stringify(this.items))
-    },
+    }
   },
 }
 </script>
@@ -78,17 +81,17 @@ export default {
     text-decoration: line-through;
     opacity: 65%;
   }
-  .list_item {
+  .todos {
     list-style: none;
   }
-  .item {
+  .todo {
     margin: 20px;
     padding: 5px;
     border-bottom: 1px solid #ccc;
     display: flex;
     justify-content: space-between;
   }
-  .item:hover {
+  .todo:hover {
     opacity: 80%;
     cursor: pointer;
   }

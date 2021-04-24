@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="register">
     <input class="form_input" type="text" placeholder="ФИО" v-model="user.fio">
     <input class="form_input" type="text" placeholder="Логин" v-model="user.login">
     <input class="form_input" type="password" placeholder="Пароль" v-model="user.password">
-    <input class="form_input" type="submit" value="Зарегистрироваться" @click="registerUser">
+    <input class="form_input" type="submit" value="Зарегистрироваться" @keydown.enter="registerUser" @click="registerUser">
   </div>
 </template>
 
@@ -36,5 +36,14 @@ export default {
 </script>
 
 <style scoped>
-
+  .register {
+    margin: 0 auto;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+  .form_input {
+    margin-bottom: 5px;
+    padding: 5px;
+  }
 </style>
