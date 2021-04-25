@@ -1,12 +1,44 @@
 <template>
-  <div class="authorizing_form">
-    <input class="form_input" type="text" placeholder="Логин" v-model="login">
-    <input class="form_input" type="password" placeholder="Пароль" v-model="password">
-    <input class="form_input" type="submit" value="Войти" @keydown.enter="user_login" @click="user_login">
-    <div v-if="message" class="error">
+  <v-form
+      ref="form"
+      lazy-validation
+      class="authorizing_form"
+      @keydown.enter="user_login"
+  >
+
+    <v-app-bar-title style="text-align: center; cursor: default">Авторизация</v-app-bar-title>
+
+    <v-text-field
+        v-model="login"
+        label="Логин"
+        required
+    ></v-text-field>
+
+    <v-text-field
+        type="password"
+        v-model="password"
+        label="Пароль"
+        required
+    ></v-text-field>
+
+    <v-alert
+        v-if="message"
+        type="error"
+        class="mes"
+    >
       {{message}}
-    </div>
-  </div>
+    </v-alert>
+
+    <v-btn
+        color="success"
+        @click="user_login"
+        plain
+        type="submit"
+    >
+      Войти
+    </v-btn>
+
+  </v-form>
 </template>
 
 <script>
@@ -19,26 +51,34 @@ export default {
       message: '',
     }
   },
+  props: {
+    title: String,
+  },
   methods: {
     user_login() {
       let users = this.$store.state.userList;
-      if (users != null) {
-        let user = users.find(item => item.login === this.login && item.password === this.password);
-        if (user != undefined) {
-          this.$store.commit('setAuth');
-          this.$store.commit('setUser', user);
-          localStorage.setItem('auth', "true");
-          localStorage.setItem('user', JSON.stringify(user));
-          this.$router.push('/todolist');
-        }
-        else {
-          this.message = 'Неверное имя пользователя или пароль';
-        }
+      if (this.login == '' || this.password == '') {
+        this.message = 'Необходимо заполнить все поля';
       }
       else {
-        this.message = 'Ошибка';
+        if (users != null) {
+          let user = users.find(item => item.login === this.login && item.password === this.password);
+          if (user != undefined) {
+            this.$store.commit('setAuth');
+            this.$store.commit('setUser', user);
+            localStorage.setItem('auth', "true");
+            localStorage.setItem('user', JSON.stringify(user));
+            this.$router.push('/todolist');
+          }
+          else {
+            this.message = 'Неверное имя пользователя или пароль';
+          }
+        }
+        else {
+          this.message = 'Ошибка';
+        }
       }
-    }
+    },
   }
 }
 </script>
@@ -48,14 +88,6 @@ export default {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    width: 400px;
-  }
-  .form_input {
-    margin-bottom: 15px;
-    height: 32px;
-    font-size: 24px;
-  }
-  .error {
-    color: darkred;
+    width: 720px;
   }
 </style>

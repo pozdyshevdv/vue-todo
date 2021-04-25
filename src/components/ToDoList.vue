@@ -1,33 +1,119 @@
 <template>
   <div class="main">
-    <div class="input">
-      <input
-          type="text"
-          @keydown.enter="addTask"
+    <v-container>
+
+      <v-text-field
           v-model="new_task"
+          label="Добавление задачи"
+          solo
+          @keydown.enter="addTask"
       >
-      <input type="submit" @click="addTask">
-    </div>
-    <div>
-      <ul
-          class="todos"
-          v-for="item in items = this.$store.state.taskList.filter(m => m.whose === this.$store.state.user.login)"
-          :key="item.id"
+        <template v-slot:append>
+          <v-fade-transition>
+            <v-icon
+                v-if="new_task"
+                @click="addTask"
+            >
+              mdi-plus
+            </v-icon>
+          </v-fade-transition>
+        </template>
+      </v-text-field>
+
+      <h2 class="display-1 success--text pl-4">
+        Tasks:&nbsp;
+        <v-fade-transition leave-absolute>
+        <span :key="`tasks-${Todos.length}`">
+          {{ Todos.length }}
+        </span>
+        </v-fade-transition>
+      </h2>
+
+      <v-divider class="mt-4"></v-divider>
+
+      <v-row
+          class="my-1"
+          align="center"
       >
-        <li
-            @click="item.completed = !item.completed"
-            class="todo"
-        >
-          <div
-              class="item_content"
-              v-bind:class="{done: item.completed}"
-          >
-            {{item.title}}
-          </div>
-          <button @click="removeTask(item.id)">x</button>
-        </li>
-      </ul>
-    </div>
+        <strong class="mx-4 info--text text--darken-2">
+          Remaining: {{ this.Todos.filter(todo => todo.completed == false).length }}
+        </strong>
+
+        <v-divider vertical></v-divider>
+
+        <strong class="mx-4 success--text text--darken-2">
+          Completed: {{ this.Todos.filter(todo => todo.completed == true).length }}
+        </strong>
+
+        <v-spacer></v-spacer>
+
+        <v-progress-circular
+            :value="progress"
+            class="mr-2"
+        ></v-progress-circular>
+      </v-row>
+
+      <v-divider class="mb-4"></v-divider>
+
+      <v-card v-if="this.Todos.length > 0">
+        <template v-for="(item, i) in this.Todos">
+          <v-divider
+              v-if="i !== 0"
+              :key="`${i}-divider`"
+          ></v-divider>
+            <v-list-item
+                :key="`${i}-${item.title}`"
+            >
+              <v-list-item-action>
+                <v-checkbox
+                    @click="completeTask(item)"
+                    :color="item.completed && 'grey' || 'primary'"
+                >
+                  <template v-slot:label>
+                    <div
+                        :class="item.completed && 'grey--text' || 'primary--text'"
+                        class="ml-4"
+                        v-text="item.title"
+                    ></div>
+                  </template>
+                </v-checkbox>
+              </v-list-item-action>
+
+              <v-spacer></v-spacer>
+
+              <v-scroll-x-transition>
+                <v-icon
+                    v-if="item.completed"
+                    color="success"
+                >
+                  mdi-check
+                </v-icon>
+              </v-scroll-x-transition>
+
+              <v-list-item-action>
+                <v-btn
+                    icon
+                    @click="removeTask(item.id)"
+                >
+                  <v-icon>mdi-trash-can-outline</v-icon>
+                </v-btn>
+              </v-list-item-action>
+
+            </v-list-item>
+          </template>
+      </v-card>
+
+      <div
+          v-else
+          class="background_img"
+      >
+        <svg style="width:72px;height:72px" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+        </svg>
+      </div>
+
+    </v-container>
+
   </div>
 </template>
 
@@ -43,7 +129,16 @@ export default {
         completed: false,
       },
       new_task: null,
+      group: null,
     }
+  },
+  computed: {
+    Todos () {
+      return this.$store.state.taskList.filter(todo => todo.whose === this.$store.state.user.login)
+    },
+    progress () {
+      return this.Todos.filter(todo => todo.completed == true).length / this.Todos.length * 100
+    },
   },
   methods: {
     addTask () {
@@ -61,12 +156,16 @@ export default {
       }
     },
     removeTask (index) {
-      let tasks = this.$store.state.taskList;
-      let remaining_tasks = tasks.filter(m => m.id != index);
+      let remaining_tasks = this.Todos.filter(m => m.id != index);
       if (remaining_tasks != undefined) {
         this.$store.commit('setTask', remaining_tasks);
         localStorage.setItem('taskList', JSON.stringify(remaining_tasks));
       }
+    },
+    completeTask (item) {
+      item.completed = !item.completed
+      this.$store.commit('setTask', this.Todos);
+      localStorage.setItem('taskList', JSON.stringify(this.Todos));
     }
   },
 }
@@ -75,29 +174,11 @@ export default {
 <style scoped>
   .main {
     margin: 0 auto;
-    width: 400px;
+    width: 720px;
   }
-  .done {
-    text-decoration: line-through;
-    opacity: 65%;
-  }
-  .todos {
-    list-style: none;
-  }
-  .todo {
-    margin: 20px;
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-  }
-  .todo:hover {
-    opacity: 80%;
-    cursor: pointer;
-  }
-  .input {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px;
+  .background_img {
+    margin: 0 auto;
+    display: table;
+    opacity: 60%;
   }
 </style>
