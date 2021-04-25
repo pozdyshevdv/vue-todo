@@ -21,7 +21,7 @@
       </v-text-field>
 
       <h2 class="display-1 success--text pl-4">
-        Tasks:&nbsp;
+        Задачи:&nbsp;
         <v-fade-transition leave-absolute>
         <span :key="`tasks-${Todos.length}`">
           {{ Todos.length }}
@@ -36,13 +36,13 @@
           align="center"
       >
         <strong class="mx-4 info--text text--darken-2">
-          Remaining: {{ this.Todos.filter(todo => todo.completed == false).length }}
+          Осталось: {{ this.Todos.filter(todo => todo.completed == false).length }}
         </strong>
 
         <v-divider vertical></v-divider>
 
         <strong class="mx-4 success--text text--darken-2">
-          Completed: {{ this.Todos.filter(todo => todo.completed == true).length }}
+          Завершены: {{ this.Todos.filter(todo => todo.completed == true).length }}
         </strong>
 
         <v-spacer></v-spacer>
@@ -156,7 +156,7 @@ export default {
       }
     },
     removeTask (index) {
-      let remaining_tasks = this.Todos.filter(m => m.id != index);
+      let remaining_tasks = this.$store.state.taskList.filter(m => m.id != index);
       if (remaining_tasks != undefined) {
         this.$store.commit('setTask', remaining_tasks);
         localStorage.setItem('taskList', JSON.stringify(remaining_tasks));
@@ -164,8 +164,8 @@ export default {
     },
     completeTask (item) {
       item.completed = !item.completed
-      this.$store.commit('setTask', this.Todos);
-      localStorage.setItem('taskList', JSON.stringify(this.Todos));
+      this.$store.commit('setTask', this.$store.state.taskList);
+      localStorage.setItem('taskList', JSON.stringify(this.$store.state.taskList));
     }
   },
 }

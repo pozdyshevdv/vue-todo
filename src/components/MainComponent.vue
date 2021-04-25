@@ -15,7 +15,7 @@
 
     </v-app-bar>
 
-    <router-view class="content"></router-view>
+    <router-view class="content">Добро пожаловть</router-view>
 
     <v-navigation-drawer
         v-model="drawer"
@@ -96,16 +96,6 @@
 </script>
 
 <style scoped>
-  .links {
-    margin: 0 auto 60px;
-    margin-top: 180px;
-    padding: 5px;
-    display: flex;
-    justify-content: space-around;
-    width: 400px;
-    background-color: #8C64FF;
-    border-radius: rounded-t-xl;
-  }
   .content {
     padding: 20px;
   }
